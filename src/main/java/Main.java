@@ -1,12 +1,21 @@
+import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
         String usersMenuChoice;
+        User tempUser = new User();
+        String title;
+        String entry;
+        LocalDate date = LocalDate.now();
         User activeUser = new User("Ingen");
 
+
+        // todo Programmet fungerar men skriver in användare dubbelt. Slutar här för idag
 
 
         do {
@@ -15,29 +24,34 @@ public class Main {
                 // Använder String för choice för att programmet inte ska krascha om användaren matar in en bokstav
                 if (usersMenuChoice.equals("1")) {
                     User.showListOfUsers();
-                    activeUser.setUserName(sc.nextLine());
+                    System.out.println("Vilken användare vill du fortsätta med?");
+                    tempUser.setUserName(sc.nextLine());
 
-
-                    if (activeUser.findInListOfUsers(activeUser)) {
-                        Menus.runSecondMenu(activeUser);
-                    }  else {
+                    if (User.findInListOfUsers(tempUser)) {
+                        activeUser.setUserName(tempUser.getUserName());
+                    }
+                    else {
                         System.out.println("Användare okänd");
                     }
-                        while(!usersMenuChoice.equals("3")) {
-                            //Menus.runSecondMenu(activeUser);
+
+                    while(!activeUser.getUserName().equalsIgnoreCase("Ingen")) {
+                            Menus.runSecondMenu(activeUser);
                             usersMenuChoice = sc.nextLine();
                             if (usersMenuChoice.equals("1")) {
                                 System.out.println("Dina inlägg");
                             }
                             else if (usersMenuChoice.equals("2")) {
+                                System.out.println("Skriv en titel:");
+                                title = sc.nextLine();
                                 System.out.println("Skriv inlägg här");
+                                entry = sc.nextLine();
+                                DiaryEntries newEntry = new DiaryEntries(activeUser, title, date, entry);
+                                DiaryEntries.addEntry(newEntry);
                             }
                             else if (usersMenuChoice.equals("3")) {
                                 System.out.println("Ses nästa gång " + activeUser.getUserName());
-                                // Startar om firstMenu
-                                //Menus.runFirstMenu(activeUser);
-                                //usersMenuChoice = sc.nextLine();
-                                //activeUser.setUserName("Ingen");
+                                usersMenuChoice = "0";
+                                activeUser.setUserName("ingen");
                             }
                             else {
                                 // Fångar felinmatning
@@ -58,9 +72,10 @@ public class Main {
                 else {
                     System.out.println("Felaktig inmatning. Försök igen");
                 }
-        } while(!usersMenuChoice.equals("3"));
+        } while(usersMenuChoice.equals("0") || !usersMenuChoice.equals("3"));
 
 
     }
+
 
 }
