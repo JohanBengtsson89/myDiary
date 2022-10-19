@@ -1,55 +1,67 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class User{
-    private String userName;
+        private String userName;
+        private static List<User> listOfUsers = new ArrayList<>();
+        private static List<User> temp = new ArrayList<>();
+        private static List<User> userListFromJson = new ArrayList<>();
+        private static File file = new File("src/main/resources/users.json");
 
-    private static List<User> listOfUsers = new ArrayList<>();
-    private static List<User> temp = new ArrayList<>();
+
 
     // metod för att visa listOfUsers
-    public static void showListOfUsers(){
+    public static void showListOfUsers() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        //List<User> userListFromJson = List.of(Paths.get("src/main/resources/users.json").toFile(), List<User>.class);
+        file.createNewFile();
+        userListFromJson = List.of(mapper.readValue(Paths.get("src/main/resources/users.json").toFile(), User[].class));
 
-        for (User i : listOfUsers){
+        for (User i : userListFromJson){
             System.out.println(i.getUserName());
         }
     }
     // Metod för att lägga till users till listOfUsers
     public static void addToListOfUsers(User newUser) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        File filePath = new File("src/main/resources/users.json");
-
+        //createNewFile() skapar en ny fil bara om det behövs
+        file.createNewFile();
         Path paths = Paths.get("src/main/resources/users.json");
-            // todo programmet skapar samma användare varje gång metoden körs
-        // json-filen får inte returnera null
-        temp = List.of(mapper.readValue(paths.toFile(), User[].class ));
-        listOfUsers.addAll(temp);
-        listOfUsers.add(newUser);
 
-        mapper.writeValue(paths.toFile(), listOfUsers);
+        try {
+           temp = List.of(mapper.readValue(Paths.get("src/main/resources/users.json").toFile(), User[].class));
+           listOfUsers.addAll(temp); // todo stannar här ibland, om man har skapat ett inlägg och sen vill skapa en
+                                            //  todo forts. ny användare under samma körning
+            listOfUsers.add(newUser);
+           mapper.writeValue(paths.toFile(), listOfUsers);
+       } catch (MismatchedInputException e){
+           listOfUsers.add(newUser);
+           mapper.writeValue(paths.toFile(), listOfUsers);
+       }
+       listOfUsers.clear();
     }
 
     // Metod för att jämföra activeUser med listOfUsers
-    public static boolean findInListOfUsers(User activeUser){
-        for(int i = 0; i < listOfUsers.size(); i++) {
+    public static boolean findInListOfUsers(User activeUser) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        file.createNewFile();
+        listOfUsers = List.of(mapper.readValue(Paths.get("src/main/resources/users.json").toFile(), User[].class));
 
-            // todo kan inte jämföra objekt i listOfUsers
-            if (listOfUsers.get(i).equals(activeUser)) {
+        for (User listOfUser : listOfUsers) {
+            if (listOfUser.getUserName().equals(activeUser.getUserName())) {
                 return true;
             }
-
         }
-        // todo sätter denna till true för att kunna testa programmet
-        return true;
+        return false;
     }
+
 
 
 

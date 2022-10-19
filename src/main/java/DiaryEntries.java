@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,26 +14,59 @@ public class DiaryEntries {
     private User user;
     private String title;
     private String entry;
-    private LocalDate date = LocalDate.now();
+    private String date;
 
     private static List<DiaryEntries> temporary = new ArrayList<>();
     private static List<DiaryEntries> listOfEntries = new ArrayList<>();
 
     public static void addEntry (DiaryEntries newEntry) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        File filePath = new File("src/main/resources/entries.json");
+        File entryFile = new File("src/main/resources/entries.json");
+        entryFile.createNewFile();
+
         Path path = Paths.get("src/main/resources/entries.json");
 
-        temporary = List.of(mapper.readValue(path.toFile(), DiaryEntries[].class));
-        listOfEntries.addAll(temporary);
-        listOfEntries.add(newEntry);
+        try {
+            temporary = List.of(mapper.readValue(Paths.get("src/main/resources/entries.json").toFile(),
+                    DiaryEntries[].class));
+            listOfEntries.addAll(temporary);
+            listOfEntries.add(newEntry);
+            mapper.writeValue(path.toFile(),listOfEntries);
 
-        mapper.writeValue(path.toFile(), listOfEntries);
-        /*String filePath = ("src/main/resources/" + newEntry.getUser() +".json");
-        mapper.writeValue(Paths.get(filePath).toFile(), newEntry);*/
+        } catch(MismatchedInputException e) {
+            listOfEntries.add(newEntry);
+            mapper.writeValue(path.toFile(), listOfEntries);
+        }
+        // Rensar Arrayen här för att inte få med dubbletter om man skapar fler inlägg under samma körning
+        listOfEntries.clear();
     }
 
-    public DiaryEntries(User user, String title, LocalDate date, String entry) {
+    // todo Json filen måste ha innehåll, för inte returnera null
+    public static void listUsersEntries (User activeUser) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        File entryFile = new File("src/main/resources/entries.json");
+        entryFile.createNewFile();
+        int index = 1;
+
+        listOfEntries = List.of(mapper.readValue(Paths.get("src/main/resources/entries.json").toFile(),
+                DiaryEntries[].class));
+        for (DiaryEntries e : listOfEntries){
+            if (e.getUser().getUserName().equals(activeUser.getUserName())){
+                System.out.println(index + ". " + e.getTitle());
+                temporary.add(e);
+                index++;
+            }
+        }
+
+    }
+    public static void selectEntry (int entryToRead){
+        System.out.println(temporary.get(entryToRead - 1).getTitle());
+        System.out.println(temporary.get(entryToRead - 1).getDate());
+        System.out.println(temporary.get(entryToRead - 1).getEntry());
+
+
+    }
+    public DiaryEntries(User user, String title, String date, String entry) {
         this.user = user;
         this.title = title;
         this.date = date;
@@ -64,5 +98,13 @@ public class DiaryEntries {
 
     public void setEntry(String entry) {
         this.entry = entry;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

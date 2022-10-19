@@ -1,21 +1,32 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
         Scanner sc = new Scanner(System.in);
+        Scanner sc2 = new Scanner(System.in);
         String usersMenuChoice;
         User tempUser = new User();
         String title;
         String entry;
         LocalDate date = LocalDate.now();
         User activeUser = new User("Ingen");
+        File file = new File("src/main/resources/users.json");
+        file.createNewFile();
+        File entryFile = new File("src/main/resources/entries.json");
+        entryFile.createNewFile();
+        /*List.of(mapper.readValue(Paths.get("src/main/resources/users.json").toFile(), User[].class));
+        List.of(mapper.readValue(Paths.get("src/main/resources/entries.json").toFile(),
+                DiaryEntries[].class));*/
 
-
-        // todo Programmet fungerar men skriver in användare dubbelt. Slutar här för idag
+        // todo måste köra json-metoderna en gång för att listorna ska skapas i konsolen 2022-10-19
 
 
         do {
@@ -30,7 +41,7 @@ public class Main {
                     if (User.findInListOfUsers(tempUser)) {
                         activeUser.setUserName(tempUser.getUserName());
                     }
-                    else {
+                    else if (!User.findInListOfUsers(tempUser)){
                         System.out.println("Användare okänd");
                     }
 
@@ -39,13 +50,19 @@ public class Main {
                             usersMenuChoice = sc.nextLine();
                             if (usersMenuChoice.equals("1")) {
                                 System.out.println("Dina inlägg");
+                                System.out.println("-------------------");
+                                DiaryEntries.listUsersEntries(activeUser);
+                                System.out.println("Vilket inlägg vill du läsa?");
+                                DiaryEntries.selectEntry(sc2.nextInt());
+
+
                             }
                             else if (usersMenuChoice.equals("2")) {
                                 System.out.println("Skriv en titel:");
                                 title = sc.nextLine();
                                 System.out.println("Skriv inlägg här");
                                 entry = sc.nextLine();
-                                DiaryEntries newEntry = new DiaryEntries(activeUser, title, date, entry);
+                                DiaryEntries newEntry = new DiaryEntries(activeUser, title, date.toString(), entry);
                                 DiaryEntries.addEntry(newEntry);
                             }
                             else if (usersMenuChoice.equals("3")) {
