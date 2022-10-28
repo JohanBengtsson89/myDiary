@@ -36,16 +36,14 @@ public class User{
         Path paths = Paths.get("src/main/resources/users.json");
 
         try {
-           temp = List.of(mapper.readValue(Paths.get("src/main/resources/users.json").toFile(), User[].class));
-           listOfUsers.addAll(temp); // todo stannar här ibland, om man har skapat ett inlägg och sen vill skapa en
-                                            //  todo forts. ny användare under samma körning
+            temp = List.of(mapper.readValue(Paths.get("src/main/resources/users.json").toFile(), User[].class));
+            List<User> newUserList = new ArrayList<>(temp);
+            newUserList.add(newUser);
+            mapper.writeValue(paths.toFile(), newUserList);
+        } catch (MismatchedInputException e) {
             listOfUsers.add(newUser);
-           mapper.writeValue(paths.toFile(), listOfUsers);
-       } catch (MismatchedInputException e){
-           listOfUsers.add(newUser);
-           mapper.writeValue(paths.toFile(), listOfUsers);
-       }
-       listOfUsers.clear();
+            mapper.writeValue(paths.toFile(), listOfUsers);
+        }
     }
 
     // Metod för att jämföra activeUser med listOfUsers

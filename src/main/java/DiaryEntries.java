@@ -18,27 +18,33 @@ public class DiaryEntries {
 
     private static List<DiaryEntries> temporary = new ArrayList<>();
     private static List<DiaryEntries> listOfEntries = new ArrayList<>();
+    private static List<DiaryEntries> tempEntries = new ArrayList<>();
 
     public static void addEntry (DiaryEntries newEntry) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         File entryFile = new File("src/main/resources/entries.json");
         entryFile.createNewFile();
+        //listOfEntries.clear();
 
         Path path = Paths.get("src/main/resources/entries.json");
 
         try {
             temporary = List.of(mapper.readValue(Paths.get("src/main/resources/entries.json").toFile(),
                     DiaryEntries[].class));
-            listOfEntries.addAll(temporary);
-            listOfEntries.add(newEntry);
-            mapper.writeValue(path.toFile(),listOfEntries);
+
+            List<DiaryEntries> newListForEntries = new ArrayList<>(temporary);
+            newListForEntries.add(newEntry);
+
+            mapper.writeValue(path.toFile(),newListForEntries);
 
         } catch(MismatchedInputException e) {
             listOfEntries.add(newEntry);
             mapper.writeValue(path.toFile(), listOfEntries);
         }
         // Rensar Arrayen här för att inte få med dubbletter om man skapar fler inlägg under samma körning
-        listOfEntries.clear();
+        //listOfEntries.clear();
+
+
     }
 
     // todo Json filen måste ha innehåll, för inte returnera null
@@ -53,16 +59,22 @@ public class DiaryEntries {
         for (DiaryEntries e : listOfEntries){
             if (e.getUser().getUserName().equals(activeUser.getUserName())){
                 System.out.println(index + ". " + e.getTitle());
-                temporary.add(e);
+                tempEntries.add(e);
                 index++;
             }
         }
 
     }
     public static void selectEntry (int entryToRead){
-        System.out.println(temporary.get(entryToRead - 1).getTitle());
-        System.out.println(temporary.get(entryToRead - 1).getDate());
-        System.out.println(temporary.get(entryToRead - 1).getEntry());
+        if (entryToRead <= tempEntries.size() && entryToRead > 0) {
+            System.out.println(tempEntries.get(entryToRead - 1).getTitle());
+            System.out.println(tempEntries.get(entryToRead - 1).getDate());
+            System.out.println(tempEntries.get(entryToRead - 1).getEntry());
+        } else {
+            System.out.println("inlägget finns inte");
+        }
+
+        tempEntries.clear();
 
 
     }
