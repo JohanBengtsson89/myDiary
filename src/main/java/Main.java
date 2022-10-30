@@ -10,7 +10,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //ObjectMapper mapper = new ObjectMapper();
         Scanner scString = new Scanner(System.in);
         Scanner scInt = new Scanner(System.in);
         String usersMenuChoice;

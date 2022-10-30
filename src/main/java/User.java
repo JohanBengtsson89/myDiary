@@ -18,7 +18,7 @@ public class User{
 
 
 
-    // metod för att visa listOfUsers
+    /** metod för att visa listOfUsers*/
     public static void showListOfUsers() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         file.createNewFile();
@@ -28,7 +28,7 @@ public class User{
             System.out.println(i.getUserName());
         }
     }
-    // Metod för att lägga till users till listOfUsers
+    /** Metod för att lägga till users till listOfUsers*/
     public static void addToListOfUsers(User newUser) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         //createNewFile() skapar en ny fil bara om det behövs
@@ -46,7 +46,7 @@ public class User{
         }
     }
 
-    // Metod för att jämföra activeUser med listOfUsers
+    /**Metod för att jämföra activeUser med listOfUsers */
     public static boolean findInListOfUsers(User activeUser) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         file.createNewFile();
@@ -60,18 +60,15 @@ public class User{
         return false;
     }
 
-
-
-
-    // Konstruktor
+    /** Konstruktor */
     public User(String userName) {
         this.userName = userName;
     }
-    // en tom konsruktor
+    /**en tom konsruktor*/
     public User() {
     }
 
-    // Getters och setters
+    /** Getters och setters */
     public static List<User> getListOfUsers() {
         return listOfUsers;
     }

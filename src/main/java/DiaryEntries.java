@@ -24,7 +24,6 @@ public class DiaryEntries {
         ObjectMapper mapper = new ObjectMapper();
         File entryFile = new File("src/main/resources/entries.json");
         entryFile.createNewFile();
-        //listOfEntries.clear();
 
         Path path = Paths.get("src/main/resources/entries.json");
 
@@ -34,20 +33,14 @@ public class DiaryEntries {
 
             List<DiaryEntries> newListForEntries = new ArrayList<>(temporary);
             newListForEntries.add(newEntry);
-
             mapper.writeValue(path.toFile(),newListForEntries);
 
         } catch(MismatchedInputException e) {
             listOfEntries.add(newEntry);
             mapper.writeValue(path.toFile(), listOfEntries);
         }
-        // Rensar Arrayen här för att inte få med dubbletter om man skapar fler inlägg under samma körning
-        //listOfEntries.clear();
-
-
     }
 
-    // todo Json filen måste ha innehåll, för inte returnera null
     public static void listUsersEntries (User activeUser) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         File entryFile = new File("src/main/resources/entries.json");
